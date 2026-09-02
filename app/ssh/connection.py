@@ -15,7 +15,7 @@ class ServerConnection:
             hostname=self.credentials.host,
             username=self.credentials.username,
             port=self.credentials.port,
-            key_filename=self.credentials.key_path
+            password=self.credentials.password
         )
 
     def execute_command(self, command_name: str):

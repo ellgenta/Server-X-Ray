@@ -4,7 +4,7 @@ from ssh.connection import ServerConnection
 client = None
 
 try:
-    credentials = ServerCredentials(*input().split())
+    credentials = ServerCredentials()
 
     client = ServerConnection(credentials)
 

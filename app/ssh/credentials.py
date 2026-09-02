@@ -4,5 +4,5 @@ from dataclasses import dataclass
 class ServerCredentials:
     host: str
     username: str
-    key_path: str
+    password: str
     port: int = 22
