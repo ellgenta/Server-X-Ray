@@ -54,3 +54,23 @@ class ServerConnection:
         if self.sftp_server:
             self.sftp_server.close()
         self.sftp_server = None
+
+    def upload(self, local_path, remote_path):
+        if not self.sftp_server:
+            raise SFTPSessionError("SFTP session is not opened")
+        try:
+            self.sftp_server.put(local_path, remote_path)
+        except OSError as er:
+            raise SFTPSessionError(er)
+        except paramiko.SSHException as er:
+            raise SFTPSessionError(er)
+
+    def download(self, remote_path, local_path):
+        if not self.sftp_server:
+            raise SFTPSessionError("SFTP session is not opened")
+        try:
+            self.sftp_server.get(remote_path, local_path)
+        except OSError as er:
+            raise SFTPSessionError(er)
+        except paramiko.SSHException as er:
+            raise SFTPSessionError(er)
