@@ -30,6 +30,8 @@ try:
 
     collector.build_workspace()
 
+    collector.inject_scripts()
+
     # print(output)
 except SSHConnectionError as er:
     print(f"Connection failed: {er}")

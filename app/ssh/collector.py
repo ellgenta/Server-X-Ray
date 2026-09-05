@@ -1,4 +1,4 @@
-from ssh.connection import ServerConnection
+from ssh.connection import ServerConnection, SFTPSessionError
 from pathlib import Path
 import uuid
 
@@ -12,7 +12,7 @@ class Collector:
     def __init__(self, ssh_server: ServerConnection):
         self.ssh_server = ssh_server
         self.collector_hash = str(uuid.uuid4())
-        self.scripts_path = Path(__file__).parent.parent / "scripts"
+        self.scripts_path = Path(__file__).parent.parent.parent / "scripts"
         self.parent_name = f"/tmp/collector-{self.collector_hash}" 
 
     def build_workspace(self):
@@ -32,4 +32,10 @@ class Collector:
                 raise CollectorError(stderr)
 
     def clear_workspace(self):
-        self.ssh_server.execute_command(self.parent_name)
+        self.ssh_server.execute_command(f"rm -r {self.parent_name}")
+
+    def inject_scripts(self):
+        for sc_path in self.scripts_path.iterdir():
+            if sc_path.is_file():
+                self.ssh_server.upload(sc_path, f"{self.parent_name}/scripts/{sc_path.name}")
+                
