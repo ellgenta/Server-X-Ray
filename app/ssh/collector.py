@@ -42,13 +42,38 @@ class Collector:
     def collect_data(self):
         scripts_rpath = f"{self.parent_name}/scripts"
 
-        col_scripts, stderr = self.ssh_server.execute_command(f'ls {scripts_rpath} | grep -wo -E "^collect_.*.sh$"')
+        col_scripts, stderr = self.ssh_server.execute_command(f'ls {scripts_rpath} | grep -wo -E "^collect_.*\.sh$"')
 
         if stderr:
             raise CollectorError(f"An error occured while trying to check for collector tools: {stderr}")
 
-        for sc_rpath in map(lambda col_sc_name: f"{scripts_rpath}/{col_sc_name}", col_scripts.split()):
-            _, stderr = self.ssh_server.execute_command(f"bash {sc_rpath}")
-            if stderr:
-                raise CollectorError(f"Unable to execute script {sc_rpath}: {stderr}")
+        if not col_scripts:
+            raise CollectorError(f"Collector tools are not uploaded at remote")
 
+        for col_sc_name in col_scripts.split():
+            _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name}")
+            if stderr:
+                raise CollectorError(f"Unable to execute script {col_sc_name}: {stderr}")
+
+    def retrieve_data(self):
+        scripts_rpath = f"{self.parent_name}/scripts"
+
+        archiver, stderr = self.ssh_server.execute_command(f'ls {scripts_rpath} | grep -wo -E "^get_.*\.sh$"')
+
+        if stderr:
+            raise CollectorError(f"An error occured while trying to check for collector tools: {stderr}")
+
+        if not archiver:
+            raise CollectorError(f"Archiver tool is not uploaded at remote")
+        
+        archiver = archiver.split()
+        if len(archiver) != 1:
+            raise CollectorError(f"There must be exactly one archiver in collector")
+
+        arc_path, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{archiver[0]}")
+        if stderr:
+            raise CollectorError(f"Unable to execute script {archiver[0]}: {stderr}")
+
+        arc_path = arc_path.strip()
+
+        self.ssh_server.download(arc_path, self.scripts_path.parent / "data" / "tmp" /  Path(arc_path).name)
