@@ -18,8 +18,8 @@ class Collector:
     def build_workspace(self):
         subdir_names = [
             f"{self.parent_name}/scripts",
-            f"{self.parent_name}/stats/perf",
-            f"{self.parent_name}/stats/logs"
+            f"{self.parent_name}/stats",
+            f"{self.parent_name}/archived_stats"
         ]
 
         _, stderr = self.ssh_server.execute_command(f"mkdir {self.parent_name}")
@@ -38,4 +38,17 @@ class Collector:
         for sc_path in self.scripts_path.iterdir():
             if sc_path.is_file():
                 self.ssh_server.upload(sc_path, f"{self.parent_name}/scripts/{sc_path.name}")
-                
+
+    def collect_data(self):
+        scripts_rpath = f"{self.parent_name}/scripts"
+
+        col_scripts, stderr = self.ssh_server.execute_command(f'ls {scripts_rpath} | grep -wo -E "^collect_.*.sh$"')
+
+        if stderr:
+            raise CollectorError(f"An error occured while trying to check for collector tools: {stderr}")
+
+        for sc_rpath in map(lambda col_sc_name: f"{scripts_rpath}/{col_sc_name}", col_scripts.split()):
+            _, stderr = self.ssh_server.execute_command(f"bash {sc_rpath}")
+            if stderr:
+                raise CollectorError(f"Unable to execute script {sc_rpath}: {stderr}")
+
