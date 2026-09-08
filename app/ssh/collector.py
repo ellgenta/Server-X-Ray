@@ -39,7 +39,7 @@ class Collector:
             if sc_path.is_file():
                 self.ssh_server.upload(sc_path, f"{self.parent_name}/scripts/{sc_path.name}")
 
-    def collect_data(self):
+    def collect_data(self, record_id: int):
         scripts_rpath = f"{self.parent_name}/scripts"
 
         col_scripts, stderr = self.ssh_server.execute_command(f'ls {scripts_rpath} | grep -wo -E "^collect_.*\.sh$"')
@@ -51,7 +51,7 @@ class Collector:
             raise CollectorError(f"Collector tools are not uploaded at remote")
 
         for col_sc_name in col_scripts.split():
-            _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name}")
+            _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/stats/stats_{record_id}")
             if stderr:
                 raise CollectorError(f"Unable to execute script {col_sc_name}: {stderr}")
 
