@@ -8,3 +8,17 @@ env/
 .vscode/
 
 tempCodeRunnerFile.py
+
+data/*
+!data/tmp/
+!data/current/
+!data/sessions/
+
+data/tmp/*
+!data/tmp/.gitkeep
+
+data/current/*
+!data/current/.gitkeep
+
+data/sessions/*
+!data/sessions/.gitkeep
