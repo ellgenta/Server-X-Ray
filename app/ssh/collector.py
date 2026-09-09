@@ -18,8 +18,8 @@ class Collector:
     def build_workspace(self):
         subdir_names = [
             f"{self.parent_name}/scripts",
-            f"{self.parent_name}/stats",
-            f"{self.parent_name}/archived_stats"
+            f"{self.parent_name}/records",
+            f"{self.parent_name}/archives"
         ]
 
         _, stderr = self.ssh_server.execute_command(f"mkdir {self.parent_name}")
@@ -50,12 +50,17 @@ class Collector:
         if not col_scripts:
             raise CollectorError(f"Collector tools are not uploaded at remote")
 
-        for col_sc_name in col_scripts.split():
-            _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/stats/stats_{record_id}")
+        _, stderr = self.ssh_server.execute_command(f"mkdir {self.parent_name}/records/record_{record_id}")
+        if stderr:
+            raise CollectorError(stderr)
+
+        for col_sc_name in col_scripts.strip().split("\n"):
+            #print(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/records/record_{record_id}")
+            _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/records/record_{record_id}")
             if stderr:
                 raise CollectorError(f"Unable to execute script {col_sc_name}: {stderr}")
 
-    def retrieve_data(self):
+    def retrieve_data(self, record_id: int):
         scripts_rpath = f"{self.parent_name}/scripts"
 
         archiver, stderr = self.ssh_server.execute_command(f'ls {scripts_rpath} | grep -wo -E "^get_.*\.sh$"')
@@ -66,11 +71,11 @@ class Collector:
         if not archiver:
             raise CollectorError(f"Archiver tool is not uploaded at remote")
         
-        archiver = archiver.split()
+        archiver = archiver.strip().split()
         if len(archiver) != 1:
             raise CollectorError(f"There must be exactly one archiver in collector")
 
-        arc_path, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{archiver[0]}")
+        arc_path, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{archiver[0]} {self.parent_name}/records/record_{record_id} {self.parent_name}/archives record_{record_id}")
         if stderr:
             raise CollectorError(f"Unable to execute script {archiver[0]}: {stderr}")
 

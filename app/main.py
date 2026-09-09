@@ -32,7 +32,9 @@ try:
 
     collector.inject_scripts()
 
-    collector.collect_data()
+    collector.collect_data(1)
+
+    collector.retrieve_data(1)
 
 except SSHConnectionError as er:
     print(f"Connection failed: {er}")
