@@ -55,7 +55,6 @@ class Collector:
             raise CollectorError(stderr)
 
         for col_sc_name in col_scripts.strip().split("\n"):
-            #print(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/records/record_{record_id}")
             _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/records/record_{record_id}")
             if stderr:
                 raise CollectorError(f"Unable to execute script {col_sc_name}: {stderr}")
