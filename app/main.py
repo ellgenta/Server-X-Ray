@@ -1,6 +1,15 @@
 from ssh.credentials import ServerCredentials
 from ssh.connection import ServerConnection, SSHConnectionError, SSHExecutionError, SFTPSessionError
 from ssh.collector import Collector, CollectorError, ScriptExecutionError
+from parser.parser import Parser, ParserException
+from models.log_entry import LogEntry
+from models.file_system_stats import FileSystemStats
+from models.file_system_stats import FileSystemStats
+from models.load_average_stats import LoadAverageStats
+from models.ram_stats import RAMStats
+from models.swap_stats import SwapStats
+from models.log_entry import LogEntry
+from datetime import datetime
 from getpass import getpass
 
 def get_credentials():
@@ -24,8 +33,6 @@ try:
 
     client.open_sftp_session()
 
-    # output, er = client.execute_command("ls -la")
-
     collector = Collector(client)
 
     collector.build_workspace()
@@ -36,6 +43,7 @@ try:
 
     collector.retrieve_data(1)
 
+    parser = Parser()
 except SSHConnectionError as er:
     print(f"Connection failed: {er}")
 except SSHExecutionError as er:
@@ -44,6 +52,8 @@ except SFTPSessionError as er:
     print(f"SFTP-session error: {er}")
 except CollectorError as er:
     print(f"Collector error: {er}")
+except ParserException as er:
+    print(f"Parser error: {er}")
 finally:
     if collector:
         collector.clear_workspace()
