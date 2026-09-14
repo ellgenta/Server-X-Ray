@@ -81,3 +81,8 @@ class Collector:
         arc_path = arc_path.strip()
 
         self.ssh_server.download(arc_path, self.scripts_path.parent / "data" / "tmp" /  Path(arc_path).name)
+
+    def close(self):
+        if self.ssh_server:
+            self.ssh_server.close_sftp_session()
+            self.ssh_server.close_connection()

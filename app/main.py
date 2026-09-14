@@ -1,15 +1,8 @@
 from ssh.credentials import ServerCredentials
-from ssh.connection import ServerConnection, SSHConnectionError, SSHExecutionError, SFTPSessionError
-from ssh.collector import Collector, CollectorError, ScriptExecutionError
-from parser.parser import Parser, ParserException
-from models.log_entry import LogEntry
-from models.file_system_stats import FileSystemStats
-from models.file_system_stats import FileSystemStats
-from models.load_average_stats import LoadAverageStats
-from models.ram_stats import RAMStats
-from models.swap_stats import SwapStats
-from models.log_entry import LogEntry
-from datetime import datetime
+from ssh.connection import SSHConnectionError, SSHExecutionError, SFTPSessionError
+from ssh.collector import CollectorError, ScriptExecutionError
+from parser.parser import ParserException
+from services.snapshot_service import SnapshotService
 from getpass import getpass
 
 def get_credentials():
@@ -21,29 +14,19 @@ def get_credentials():
 
     return ServerCredentials(_host, _username, _password)
 
-client = None
-collector = None
+service = None
 
 try:
     credentials = get_credentials()
 
-    client = ServerConnection(credentials)
+    service = SnapshotService()
 
-    client.set_connection()
+    service.start_service(credentials)
 
-    client.open_sftp_session()
+    test_snapshot = service.get_snapshot()
 
-    collector = Collector(client)
+    test_snapshot = service.get_snapshot()
 
-    collector.build_workspace()
-
-    collector.inject_scripts()
-
-    collector.collect_data(1)
-
-    collector.retrieve_data(1)
-    
-    parser = Parser()
 except SSHConnectionError as er:
     print(f"Connection failed: {er}")
 except SSHExecutionError as er:
@@ -54,9 +37,8 @@ except CollectorError as er:
     print(f"Collector error: {er}")
 except ParserException as er:
     print(f"Parser error: {er}")
+except ScriptExecutionError as er:
+    print(f"Script execution error: {er}")
 finally:
-    if collector:
-        collector.clear_workspace()
-    if client:
-        client.close_sftp_session()
-        client.close_connection()
+    if service:
+        service.stop_service()

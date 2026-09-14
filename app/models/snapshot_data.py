@@ -1,8 +1,8 @@
-from file_system_stats import FileSystemStats
-from load_average_stats import LoadAverageStats
-from ram_stats import RAMStats
-from swap_stats import SwapStats
-from log_entry import LogEntry
+from .file_system_stats import FileSystemStats
+from .load_average_stats import LoadAverageStats
+from .ram_stats import RAMStats
+from .swap_stats import SwapStats
+from .log_entry import LogEntry
 from dataclasses import dataclass
 
 @dataclass
