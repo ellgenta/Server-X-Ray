@@ -27,6 +27,8 @@ try:
 
     test_snapshot = service.get_snapshot()
 
+    service.save_session(1)
+
 except SSHConnectionError as er:
     print(f"Connection failed: {er}")
 except SSHExecutionError as er:

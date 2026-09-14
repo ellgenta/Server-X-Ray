@@ -10,7 +10,7 @@ class SnapshotData:
     ram_stats: RAMStats
     swap_stats: SwapStats
     load_average_stats: LoadAverageStats
-    file_system_stats: FileSystemStats
+    file_systems_stats: list[FileSystemStats]
     auth_logs: list[LogEntry]
     sys_logs: list[LogEntry]
     kern_logs: list[LogEntry]
