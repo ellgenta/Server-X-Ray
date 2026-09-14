@@ -9,6 +9,16 @@ class ParserException(Exception):
     pass
 
 class Parser:
+    WARNING_TRIGGERS = ["warning","retry","deprecated"]
+    
+    ERROR_TRIGGERS = ["failed","failure","exception","error",
+        "denied","not found","corrupted","refused","kill"
+    ]
+
+    CRITICAL_TRIGGERS = ["panic","out of memory",
+        "segfault"
+    ]
+
     def parse_key_value_pairs(self, file_path: str):
         try:
             parsed_data = dict()
@@ -25,7 +35,7 @@ class Parser:
     def parse_ram_stats(self, file_path: str):
         parsed_data = self.parse_key_value_pairs(file_path)
 
-        _usage_percent = int(parsed_data["used"]) / int(parsed_data["total"]) * 100
+        _usage_percent = round(int(parsed_data["used"]) / int(parsed_data["total"]) * 100)
 
         return RAMStats(
             timestamp=datetime.now(),
@@ -42,7 +52,7 @@ class Parser:
     def parse_swap_stats(self, file_path: str):
         parsed_data = self.parse_key_value_pairs(file_path)
         
-        _usage_percent = int(parsed_data["used"]) / int(parsed_data["total"]) * 100
+        _usage_percent = round(int(parsed_data["used"]) / int(parsed_data["total"]) * 100)
 
         return SwapStats(
             timestamp=datetime.now(),
@@ -66,7 +76,7 @@ class Parser:
     def parse_file_system_stats(self, file_path: str):
         parsed_data = self.parse_key_value_pairs(file_path)
 
-        _usage_percent = int(parsed_data["used"].removesuffix("MB")) / int(parsed_data["size"].removesuffix("MB")) * 100
+        _usage_percent = round(int(parsed_data["used"].removesuffix("MB")) / int(parsed_data["size"].removesuffix("MB")) * 100)
 
         return FileSystemStats(
             timestamp=datetime.now(),
@@ -80,29 +90,16 @@ class Parser:
         )
 
     def has_any_trigger(self, message: str, triggers: list[str]):
-        for tr in triggers:
-            if tr in message:
-                return True
-        return False
+        return any(tr in message for tr in triggers)
 
     def get_log_level(self, message: str):
         message = message.lower()
-        
-        warning_triggers = ["warning","retry","deprecated"]
 
-        error_triggers = ["failed","failure","exception","error",
-            "denied","not found","corrupted","refused","kill"
-        ]
-
-        critical_triggers = ["panic","out of memory",
-            "segfault"
-        ]
-
-        if self.has_any_trigger(message, critical_triggers):
+        if self.has_any_trigger(message, self.CRITICAL_TRIGGERS):
             return "CRITICAL"
-        if self.has_any_trigger(message, error_triggers):
+        if self.has_any_trigger(message, self.ERROR_TRIGGERS):
             return "ERROR"
-        if self.has_any_trigger(message, warning_triggers):
+        if self.has_any_trigger(message, self.WARNING_TRIGGERS):
             return "WARNING"
 
         return "INFO"

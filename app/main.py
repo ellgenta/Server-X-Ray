@@ -42,7 +42,7 @@ try:
     collector.collect_data(1)
 
     collector.retrieve_data(1)
-
+    
     parser = Parser()
 except SSHConnectionError as er:
     print(f"Connection failed: {er}")

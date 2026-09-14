@@ -8,4 +8,4 @@ class SwapStats:
     total: int
     used: int
     free: int
-    usage_percent: float
+    usage_percent: int

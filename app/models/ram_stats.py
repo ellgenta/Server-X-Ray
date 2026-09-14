@@ -11,4 +11,4 @@ class RAMStats:
     shared: int
     cache: int
     available: int
-    usage_percent: float
+    usage_percent: int

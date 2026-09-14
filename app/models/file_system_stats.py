@@ -10,4 +10,4 @@ class FileSystemStats:
     used: int
     available: int
     mount: str
-    usage_percent: float
+    usage_percent: int
