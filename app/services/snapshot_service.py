@@ -52,11 +52,13 @@ class SnapshotService:
             kern_logs=self.parser.parse_logs(dst_path / "logs/kernlog.txt")
         )
 
-    def save_session(self, session_id: int):
+    def save_session(self):
+        session_uid = self.collector.collector_hash
+
         root_path = Path(__file__).parent.parent.parent
 
         src_path = root_path / "data/current"
-        dst_path = root_path / f"data/sessions/session_{session_id}"
+        dst_path = root_path / f"data/sessions/session_{session_uid}"
 
         shutil.make_archive(base_name=dst_path, format="zip", root_dir=src_path)
 
@@ -74,3 +76,5 @@ class SnapshotService:
         if self.collector:
             self.collector.clear_workspace()
             self.collector.close()
+            self.collector = None
+            self.snapshot_id = 1

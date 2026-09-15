@@ -2,7 +2,7 @@ from ssh.credentials import ServerCredentials
 from ssh.connection import SSHConnectionError, SSHExecutionError, SFTPSessionError
 from ssh.collector import CollectorError, ScriptExecutionError
 from parser.parser import ParserException
-from services.snapshot_service import SnapshotService
+from controllers.app_controller import AppController, ControllerError
 from getpass import getpass
 
 def get_credentials():
@@ -14,20 +14,20 @@ def get_credentials():
 
     return ServerCredentials(_host, _username, _password)
 
-service = None
+controller = None
 
 try:
     credentials = get_credentials()
 
-    service = SnapshotService()
+    controller = AppController()
 
-    service.start_service(credentials)
+    controller.connect(credentials)
 
-    test_snapshot = service.get_snapshot()
+    controller.update()
 
-    test_snapshot = service.get_snapshot()
+    controller.update()
 
-    service.save_session(1)
+    controller.update()
 
 except SSHConnectionError as er:
     print(f"Connection failed: {er}")
@@ -41,6 +41,8 @@ except ParserException as er:
     print(f"Parser error: {er}")
 except ScriptExecutionError as er:
     print(f"Script execution error: {er}")
+except ControllerError as er:
+    print(f"Controller error: {er}")
 finally:
-    if service:
-        service.stop_service()
+    if controller and controller.is_connected:
+        controller.disconnect()
