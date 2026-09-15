@@ -45,7 +45,7 @@ class SnapshotService:
             ram_stats=self.parser.parse_ram_stats(dst_path / "perf/ram_stats.txt"),
             swap_stats=self.parser.parse_swap_stats(dst_path / "perf/swap_stats.txt"),
             load_average_stats=self.parser.parse_load_average_stats(dst_path / "perf/la_stats.txt"),
-            file_systems_stats=None,
+            disk_stats=self.parser.parse_disk_stats(dst_path / "perf"),
             proc_list=self.parser.parse_proc_list(dst_path / "perf/proc_list.txt"),
             auth_logs=self.parser.parse_logs(dst_path / "logs/authlog.txt"),
             sys_logs=self.parser.parse_logs(dst_path / "logs/syslog.txt"),

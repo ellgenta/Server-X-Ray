@@ -5,6 +5,7 @@ from models.swap_stats import SwapStats
 from models.log_entry import LogEntry
 from models.proc_entry import ProcessEntry
 from datetime import datetime
+from pathlib import Path
 
 class ParserException(Exception):
     pass
@@ -89,6 +90,15 @@ class Parser:
             mount=parsed_data["mount"],
             usage_percent=_usage_percent
         )
+
+    def parse_disk_stats(self, dir_path: Path):
+        disk_stats = list()
+
+        for file_path in dir_path.iterdir():
+            if file_path.stem.startswith("fs_"):
+                disk_stats.append(self.parse_file_system_stats(file_path))
+
+        return disk_stats
 
     def parse_proc_list(self, file_path: str):
         try:
