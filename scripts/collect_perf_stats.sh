@@ -66,6 +66,19 @@ record_disk_stats() {
     return 0
 }
 
+record_proc_list() {
+    local dst_dir="$1"
+
+    if ! ps aux | awk -v dir="$dst_dir" '
+        NR != 1 {print $1, $2, $3, $4, $8, $9, $11 > dir"/proc_list.txt"}
+    '; then
+        echo "Error while collecting data" >&2
+        return 1
+    fi
+
+    return 0
+}
+
 perf_dir="$1"/perf
 
 mkdir -p "$perf_dir" || exit 1
@@ -75,5 +88,7 @@ record_ram_stats "$perf_dir" || exit 1
 record_cpu_stats "$perf_dir" || exit 1
 
 record_disk_stats "$perf_dir" || exit 1
+
+record_proc_list "$perf_dir" || exit 1
 
 exit 0

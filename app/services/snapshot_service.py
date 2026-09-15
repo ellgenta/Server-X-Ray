@@ -46,6 +46,7 @@ class SnapshotService:
             swap_stats=self.parser.parse_swap_stats(dst_path / "perf/swap_stats.txt"),
             load_average_stats=self.parser.parse_load_average_stats(dst_path / "perf/la_stats.txt"),
             file_systems_stats=None,
+            proc_list=self.parser.parse_proc_list(dst_path / "perf/proc_list.txt"),
             auth_logs=self.parser.parse_logs(dst_path / "logs/authlog.txt"),
             sys_logs=self.parser.parse_logs(dst_path / "logs/syslog.txt"),
             kern_logs=self.parser.parse_logs(dst_path / "logs/kernlog.txt")

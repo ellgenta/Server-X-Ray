@@ -3,6 +3,7 @@ from .load_average_stats import LoadAverageStats
 from .ram_stats import RAMStats
 from .swap_stats import SwapStats
 from .log_entry import LogEntry
+from .proc_entry import ProcessEntry
 from dataclasses import dataclass
 
 @dataclass
@@ -11,6 +12,7 @@ class SnapshotData:
     swap_stats: SwapStats
     load_average_stats: LoadAverageStats
     file_systems_stats: list[FileSystemStats]
+    proc_list: list[ProcessEntry]
     auth_logs: list[LogEntry]
     sys_logs: list[LogEntry]
     kern_logs: list[LogEntry]

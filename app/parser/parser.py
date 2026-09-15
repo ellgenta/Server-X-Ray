@@ -3,6 +3,7 @@ from models.load_average_stats import LoadAverageStats
 from models.ram_stats import RAMStats
 from models.swap_stats import SwapStats
 from models.log_entry import LogEntry
+from models.proc_entry import ProcessEntry
 from datetime import datetime
 
 class ParserException(Exception):
@@ -89,6 +90,35 @@ class Parser:
             usage_percent=_usage_percent
         )
 
+    def parse_proc_list(self, file_path: str):
+        try:
+            entries = list()
+            with open(file_path, encoding="utf-8") as file:
+                for line in file:
+                    entry = line.strip().split(maxsplit=6)
+                    if len(entry) != 7:
+                        continue
+                    try:
+                        entry_timestamp = datetime.strptime(entry[5], "%H:%M")
+                    except ValueError:
+                        continue
+                    entries.append(
+                        ProcessEntry(
+                            user=entry[0],
+                            pid=int(entry[1]),
+                            cpu_load=float(entry[2]),
+                            mem_load=float(entry[3]),
+                            status=entry[4],
+                            time=entry_timestamp,
+                            command=entry[6]
+                        )
+                    )
+            return entries
+        except OSError as er:
+            raise ParserException(f"An error occured while working with {file_path}: {er}")
+        except Exception as er:
+            raise ParserException(f"An error occured while parsing {file_path}: {er}")
+
     def has_any_trigger(self, message: str, triggers: list[str]):
         return any(tr in message for tr in triggers)
 
@@ -109,7 +139,7 @@ class Parser:
             entries = list()
             with open(file_path, encoding="utf-8") as file:
                 for line in file:
-                    entry = line.split(maxsplit=2)
+                    entry = line.strip().split(maxsplit=2)
                     if len(entry) != 3:
                         continue
                     try:
