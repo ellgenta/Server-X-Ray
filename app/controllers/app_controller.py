@@ -23,8 +23,11 @@ class AppController:
     def connect(self, credentials: ServerCredentials):
         if self.is_connected:
             return
-        
-        self.service.start_service(credentials)
+
+        try:
+            self.service.start_service(credentials)
+        except Exception as er:
+            raise ControllerError(str(er))
         self.is_connected = True
 
     def _update_logs(self, old_logs, new_logs):

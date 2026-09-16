@@ -4,6 +4,7 @@ from ssh.collector import CollectorError, ScriptExecutionError
 from parser.parser import ParserException
 from controllers.app_controller import AppController, ControllerError
 from getpass import getpass
+from gui.gui import App
 
 def get_credentials():
     print("Input host IP-address:", end=" ")
@@ -17,17 +18,19 @@ def get_credentials():
 controller = None
 
 try:
-    credentials = get_credentials()
+    # credentials = get_credentials()
 
     controller = AppController()
 
-    controller.connect(credentials)
+    # controller.connect(credentials)
 
-    controller.update()
+    # controller.update()
 
-    controller.update()
+    # controller.update()
 
-    controller.update()
+    # controller.update()
+
+    app = App(controller)
 
 except SSHConnectionError as er:
     print(f"Connection failed: {er}")
