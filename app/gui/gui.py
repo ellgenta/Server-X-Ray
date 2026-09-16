@@ -1,7 +1,7 @@
 import tkinter as tk
 import ctypes
-from .login_page import LoginPage
-from .performace_page import PerformancePage
+from .login.login_page import LoginPage
+from .performance.performace_page import PerformancePage
 
 class App:
     def __init__(self, controller):
@@ -25,7 +25,7 @@ class App:
             self.controller, 
             self.show_performance_page
         )
-        
+
         self.login_page.pack(fill="both", expand=True)
 
     def show_performance_page(self):
@@ -33,7 +33,9 @@ class App:
 
         self.performance_page = PerformancePage(
             self.root,
-            self.controller
+            self.controller,
+            "meow",
+            self.show_login_page
         )
 
         self.performance_page.pack(
