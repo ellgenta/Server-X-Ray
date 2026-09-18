@@ -3,6 +3,7 @@ import ctypes
 from .login.login_page import LoginPage
 from .performance.performace_page import PerformancePage
 
+
 class App:
     def __init__(self, controller):
         ctypes.windll.shcore.SetProcessDpiAwareness(1)
@@ -21,8 +22,8 @@ class App:
 
     def show_login_page(self):
         self.login_page = LoginPage(
-            self.root, 
-            self.controller, 
+            self.root,
+            self.controller,
             self.show_performance_page
         )
 
@@ -30,6 +31,8 @@ class App:
 
     def show_performance_page(self):
         self.login_page.destroy()
+
+        self.controller.update()
 
         self.performance_page = PerformancePage(
             self.root,
