@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 
-
 class ProcessTable(tk.Frame):
     COLUMNS = (
         ("user", "User"),
@@ -23,6 +22,9 @@ class ProcessTable(tk.Frame):
         "command": 120,
     }
 
+    EVEN_ROW_COLOR = "#1f2226"
+    ODD_ROW_COLOR = "#292d30"
+
     def __init__(self, parent):
         super().__init__(parent, bg="#292d30")
 
@@ -32,7 +34,6 @@ class ProcessTable(tk.Frame):
         self.style = ttk.Style(self)
         self.style.theme_use("clam")
 
-        # Table
         self.style.configure(
             "Processes.Treeview",
             background="#292d30",
@@ -43,7 +44,6 @@ class ProcessTable(tk.Frame):
             borderwidth=0
         )
 
-        # Table headings
         self.style.configure(
             "Processes.Treeview.Heading",
             background="#202020",
@@ -52,14 +52,12 @@ class ProcessTable(tk.Frame):
             borderwidth=0
         )
 
-        # Selected row
         self.style.map(
             "Processes.Treeview",
             background=[("selected", "#333637")],
             foreground=[("selected", "#ffffff")]
         )
 
-        # Prevent heading colors from changing on hover/press
         self.style.map(
             "Processes.Treeview.Heading",
             background=[
@@ -99,6 +97,9 @@ class ProcessTable(tk.Frame):
             sticky="nsew"
         )
 
+        self.tree.tag_configure("evenrow", background=self.EVEN_ROW_COLOR)
+        self.tree.tag_configure("oddrow", background=self.ODD_ROW_COLOR)
+
         self.scrollbar = ttk.Scrollbar(
             self,
             orient="vertical",
@@ -121,7 +122,9 @@ class ProcessTable(tk.Frame):
         if not proc_list:
             return
 
-        for entry in proc_list:
+        for index, entry in enumerate(proc_list):
+            tag = "evenrow" if index % 2 == 0 else "oddrow"
+
             self.tree.insert(
                 "",
                 "end",
@@ -133,5 +136,6 @@ class ProcessTable(tk.Frame):
                     entry.status,
                     entry.time.strftime("%H:%M"),
                     entry.command
-                )
+                ),
+                tags=(tag,)
             )

@@ -1,9 +1,8 @@
 import tkinter as tk
-
 from .top_bar import TopBar
 from .panel import Panel
 from .process_table import ProcessTable
-
+from .cpu_stats import CPUStats
 
 class PerformancePage(tk.Frame):
     def __init__(self, parent, controller, host, on_disconnect):
@@ -15,6 +14,7 @@ class PerformancePage(tk.Frame):
 
         self.create_widgets()
         self.refresh_processes()
+        self.refresh_cpu_stats()
 
     def create_widgets(self):
         self.top_bar = TopBar(
@@ -89,6 +89,44 @@ class PerformancePage(tk.Frame):
             pady=(0, 8)
         )
 
+        self.panel_2.grid_columnconfigure(
+            0,
+            weight=1
+        )
+
+        self.panel_2.grid_rowconfigure(
+            1,
+            weight=1
+        )
+
+        self.panel_2_title = tk.Label(
+            self.panel_2,
+            text="CPU Stats",
+            bg="#292d30",
+            fg="#ffffff",
+            font=("Roboto", 22)
+        )
+
+        self.panel_2_title.grid(
+            row=0,
+            column=0,
+            sticky="nw",
+            padx=10,
+            pady=10
+        )
+
+        self.cpu_stats = CPUStats(
+            self.panel_2
+        )
+
+        self.cpu_stats.grid(
+            row=1,
+            column=0,
+            sticky="nsew",
+            padx=10,
+            pady=(0, 10)
+        )
+
         self.panel_3 = Panel(self.left_column)
 
         self.panel_3.grid(
@@ -146,6 +184,11 @@ class PerformancePage(tk.Frame):
     def refresh_processes(self):
         self.process_table.update_processes(
             self.controller.proc_list
+        )
+
+    def refresh_cpu_stats(self):
+        self.cpu_stats.update_stats(
+            self.controller.load_average_stats
         )
 
     def disconnect(self):
