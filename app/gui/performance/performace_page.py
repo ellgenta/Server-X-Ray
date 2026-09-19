@@ -4,7 +4,7 @@ from .panel import Panel
 from .process_table import ProcessTable
 from .cpu_stats import CPUStats
 from .disk_table import DiskTable
-
+from .ram_stats import RamStats
 
 class PerformancePage(tk.Frame):
     def __init__(self, parent, controller, host, on_disconnect):
@@ -15,10 +15,10 @@ class PerformancePage(tk.Frame):
         self.on_disconnect = on_disconnect
 
         self.create_widgets()
-
         self.refresh_processes()
         self.refresh_cpu_stats()
         self.refresh_disks()
+        self.refresh_ram()
 
     def create_widgets(self):
         self.top_bar = TopBar(
@@ -48,7 +48,7 @@ class PerformancePage(tk.Frame):
             sticky="nsew"
         )
 
-        self.content.grid_columnconfigure(0, weight=3)
+        self.content.grid_columnconfigure(0, weight=2)
         self.content.grid_columnconfigure(1, weight=5)
         self.content.grid_rowconfigure(0, weight=1)
 
@@ -83,6 +83,50 @@ class PerformancePage(tk.Frame):
             column=0,
             sticky="nsew",
             pady=(0, 8)
+        )
+
+        self.panel_1.grid_columnconfigure(
+            0,
+            weight=15
+        )
+
+        self.panel_1.grid_columnconfigure(
+            1,
+            weight=15
+        )
+
+        self.panel_1.grid_rowconfigure(
+            1,
+            weight=1
+        )
+
+        self.panel_1_title = tk.Label(
+            self.panel_1,
+            text="RAM Stats",
+            bg="#292d30",
+            fg="#ffffff",
+            font=("Roboto", 22)
+        )
+
+        self.panel_1_title.grid(
+            row=0,
+            column=0,
+            columnspan=2,
+            sticky="nw",
+            padx=10,
+            pady=10
+        )
+
+        self.ram_stats = RamStats(
+            self.panel_1
+        )
+
+        self.ram_stats.grid(
+            row=1,
+            column=0,
+            sticky="nsew",
+            padx=(10, 5),
+            pady=(0, 10)
         )
 
         self.panel_2 = Panel(self.left_column)
@@ -152,7 +196,7 @@ class PerformancePage(tk.Frame):
 
         self.panel_3_title = tk.Label(
             self.panel_3,
-            text="Disk Usage",
+            text="Disk Stats",
             bg="#292d30",
             fg="#ffffff",
             font=("Roboto", 22)
@@ -173,7 +217,7 @@ class PerformancePage(tk.Frame):
         self.disk_table.grid(
             row=1,
             column=0,
-            sticky="new",
+            sticky="nsew",
             padx=(0, 10),
             pady=(0, 10)
         )
@@ -237,6 +281,11 @@ class PerformancePage(tk.Frame):
     def refresh_disks(self):
         self.disk_table.update_disks(
             self.controller.disk_stats
+        )
+
+    def refresh_ram(self):
+        self.ram_stats.update_stats(
+            self.controller.ram_stats_history
         )
 
     def disconnect(self):

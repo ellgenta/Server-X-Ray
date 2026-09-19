@@ -9,9 +9,9 @@ logging.getLogger("matplotlib").setLevel(logging.WARNING)
 class CPUStats(tk.Frame):
     BAR_LABELS = ("Last minute", "Last 5 minutes", "Last 15 minutes")
 
-    GREEN = "#7ac2a2"
+    GREEN = "#3dd840"
     YELLOW = "#e2c53c"
-    RED = "#e23535"
+    RED = "#e92121"
 
     def __init__(self, parent):
         super().__init__(parent, bg="#292d30")

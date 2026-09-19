@@ -1,4 +1,5 @@
 import tkinter as tk
+import threading
 from tkinter import messagebox
 from ssh.credentials import ServerCredentials
 from controllers.app_controller import ControllerError
@@ -92,13 +93,30 @@ class LoginPage(tk.Frame):
             password=password,
         )
 
+        self.connect_button.configure(state="disabled", text="Connecting...")
+
+        threading.Thread(
+            target=self._connect_in_background,
+            args=(credentials, host),
+            daemon=True
+        ).start()
+
+    def _connect_in_background(self, credentials, host):
         try:
             self.controller.connect(credentials)
         except ControllerError as er:
-            messagebox.showerror(
-                title=f"Connection to {host} failed",
-                message=str(er)
-            )
-        else:
-            self.on_login_success()
-        
+            self.after(0, lambda: self._on_connect_error(host, er))
+            return
+
+        self.after(0, self._on_connect_success)
+
+    def _on_connect_success(self):
+        self.on_login_success()
+
+    def _on_connect_error(self, host, er):
+        self.connect_button.configure(state="normal", text="Connect")
+
+        messagebox.showerror(
+            title=f"Connection to {host} failed",
+            message=str(er)
+        )

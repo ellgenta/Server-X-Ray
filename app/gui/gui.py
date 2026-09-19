@@ -15,11 +15,9 @@ class App:
         self.root.title("Server X-Ray")
         self.root.geometry("1000x700")
 
-        self.updating = False
+        self.update_in_progress = False
 
         self.show_login_page()
-        self.root.after(10000, self.update_data)
-
         self.run()
 
     def run(self):
@@ -32,10 +30,9 @@ class App:
             self.show_performance_page
         )
 
-        self.login_page.pack(
-            fill="both",
-            expand=True
-        )
+        self.login_page.pack(fill="both", expand=True)
+
+        self.update_data()
 
     def show_performance_page(self):
         self.login_page.destroy()
@@ -52,34 +49,35 @@ class App:
             expand=True
         )
 
-        self.start_update()
-
-    def start_update(self):
-        if self.controller.is_connected and not self.updating:
-            self.updating = True
-
-            thread = threading.Thread(
-                target=self.update_worker,
-                daemon=True
-            )
-
-            thread.start()
+        self._trigger_update()
 
     def update_data(self):
-        self.start_update()
-        self.root.after(10000, self.update_data)
+        self._trigger_update()
+        self.root.after(5000, self.update_data)
 
-    def update_worker(self):
+    def _trigger_update(self):
+        if self.controller.is_connected and not self.update_in_progress:
+            self.update_in_progress = True
+
+            threading.Thread(
+                target=self._fetch_update_in_background,
+                daemon=True
+            ).start()
+
+    def _fetch_update_in_background(self):
         try:
             self.controller.update()
-            self.root.after(0, self.refresh_gui)
-        finally:
-            self.updating = False
-
-    def refresh_gui(self):
-        if not hasattr(self, "performance_page"):
+        except Exception:
+            self.update_in_progress = False
             return
 
-        self.performance_page.refresh_processes()
-        self.performance_page.refresh_cpu_stats()
-        self.performance_page.refresh_disks()
+        self.root.after(0, self._apply_update)
+
+    def _apply_update(self):
+        self.update_in_progress = False
+
+        if hasattr(self, "performance_page"):
+            self.performance_page.refresh_processes()
+            self.performance_page.refresh_cpu_stats()
+            self.performance_page.refresh_disks()
+            self.performance_page.refresh_ram()
