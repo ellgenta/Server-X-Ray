@@ -57,7 +57,7 @@ class TopBar(tk.Frame):
             activebackground="#333637",
             activeforeground="#7ac2a2",
             font=("Roboto", 25, "bold"),
-            text="Log 1",
+            text="Authlogs",
             borderwidth=0,
             highlightthickness=0,
             takefocus=0,
@@ -68,7 +68,7 @@ class TopBar(tk.Frame):
 
         self.log2_button = tk.Button(
             self,
-            text="Log 2",
+            text="Syslogs",
             bg="#292d30",
             fg="#7ac2a2",
             activebackground="#333637",
@@ -84,7 +84,7 @@ class TopBar(tk.Frame):
 
         self.log3_button = tk.Button(
             self,
-            text="Log 3",
+            text="Kernlogs",
             bg="#292d30",
             fg="#7ac2a2",
             activebackground="#333637",

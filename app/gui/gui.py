@@ -1,7 +1,9 @@
 import tkinter as tk
 import ctypes
+import threading
 from .login.login_page import LoginPage
 from .performance.performace_page import PerformancePage
+
 
 class App:
     def __init__(self, controller):
@@ -13,7 +15,11 @@ class App:
         self.root.title("Server X-Ray")
         self.root.geometry("1000x700")
 
+        self.updating = False
+
         self.show_login_page()
+        self.root.after(10000, self.update_data)
+
         self.run()
 
     def run(self):
@@ -26,9 +32,10 @@ class App:
             self.show_performance_page
         )
 
-        self.login_page.pack(fill="both", expand=True)
-
-        self.update_data()
+        self.login_page.pack(
+            fill="both",
+            expand=True
+        )
 
     def show_performance_page(self):
         self.login_page.destroy()
@@ -45,12 +52,34 @@ class App:
             expand=True
         )
 
+        self.start_update()
+
+    def start_update(self):
+        if self.controller.is_connected and not self.updating:
+            self.updating = True
+
+            thread = threading.Thread(
+                target=self.update_worker,
+                daemon=True
+            )
+
+            thread.start()
+
     def update_data(self):
-        if self.controller.is_connected:
-            self.controller.update()
-
-            if hasattr(self, "performance_page"):
-                self.performance_page.refresh_processes()
-                self.performance_page.refresh_cpu_stats()
-
+        self.start_update()
         self.root.after(10000, self.update_data)
+
+    def update_worker(self):
+        try:
+            self.controller.update()
+            self.root.after(0, self.refresh_gui)
+        finally:
+            self.updating = False
+
+    def refresh_gui(self):
+        if not hasattr(self, "performance_page"):
+            return
+
+        self.performance_page.refresh_processes()
+        self.performance_page.refresh_cpu_stats()
+        self.performance_page.refresh_disks()

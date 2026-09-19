@@ -19,13 +19,22 @@ class CPUStats(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.figure = Figure(facecolor="#292d30")
+        self.figure = Figure(figsize=(3, 2), facecolor="#292d30")
         self.ax = self.figure.add_subplot(111)
 
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
         self.canvas.get_tk_widget().configure(bg="#292d30", highlightthickness=0)
-        self.canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
-        self.canvas.get_tk_widget().bind("<Configure>", lambda event: self.canvas.draw_idle())
+        self.canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew", pady=(0, 16))
+
+        self.caption = tk.Label(
+            self,
+            text="Load Average",
+            bg="#292d30",
+            fg="#ffffff",
+            font=("Roboto", 12)
+        )
+
+        self.caption.grid(row=1, column=0, pady=(0, 8))
 
         self.values = (0.0, 0.0, 0.0)
         self._draw()
@@ -65,5 +74,6 @@ class CPUStats(tk.Frame):
 
         self.ax.set_yticks([])
         self.ax.set_ylim(0, max(max(self.values), 1.0) * 1.2)
+        self.figure.subplots_adjust(bottom=0.25)
 
         self.canvas.draw()
