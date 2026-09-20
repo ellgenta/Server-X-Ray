@@ -22,7 +22,17 @@ class RamStats(tk.Frame):
 
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
         self.canvas.get_tk_widget().configure(bg="#292d30", highlightthickness=0)
-        self.canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
+        self.canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew", pady=(0, 6))
+
+        self.caption = tk.Label(
+            self,
+            text="RAM Load (%)",
+            bg="#292d30",
+            fg="#ffffff",
+            font=("Roboto", 12)
+        )
+
+        self.caption.grid(row=1, column=0, pady=(0, 5))
 
         self.values = []
         self._draw()

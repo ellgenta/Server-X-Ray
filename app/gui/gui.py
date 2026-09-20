@@ -81,3 +81,4 @@ class App:
             self.performance_page.refresh_cpu_stats()
             self.performance_page.refresh_disks()
             self.performance_page.refresh_ram()
+            self.performance_page.refresh_ram_swap()

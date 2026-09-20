@@ -5,6 +5,7 @@ from .process_table import ProcessTable
 from .cpu_stats import CPUStats
 from .disk_table import DiskTable
 from .ram_stats import RamStats
+from .ram_swap_table import RamSwapTable
 
 class PerformancePage(tk.Frame):
     def __init__(self, parent, controller, host, on_disconnect):
@@ -19,6 +20,7 @@ class PerformancePage(tk.Frame):
         self.refresh_cpu_stats()
         self.refresh_disks()
         self.refresh_ram()
+        self.refresh_ram_swap()
 
     def create_widgets(self):
         self.top_bar = TopBar(
@@ -126,6 +128,18 @@ class PerformancePage(tk.Frame):
             column=0,
             sticky="nsew",
             padx=(10, 5),
+            pady=(0, 10)
+        )
+
+        self.ram_swap_table = RamSwapTable(
+            self.panel_1
+        )
+
+        self.ram_swap_table.grid(
+            row=1,
+            column=1,
+            sticky="new",
+            padx=(5, 10),
             pady=(0, 10)
         )
 
@@ -286,6 +300,12 @@ class PerformancePage(tk.Frame):
     def refresh_ram(self):
         self.ram_stats.update_stats(
             self.controller.ram_stats_history
+        )
+
+    def refresh_ram_swap(self):
+        self.ram_swap_table.update_stats(
+            self.controller.ram_stats_history,
+            self.controller.swap_stats
         )
 
     def disconnect(self):
