@@ -58,11 +58,10 @@ class Collector:
             raise CollectorError(stderr)
 
         for col_sc_name in col_scripts.strip().split("\n"):
-            if col_sc_name.endswith("logs.sh") and record_id != 1:
-                _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/records/record_{record_id} '{record_stamp}'")
-                # print(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/records/record_{record_id} {record_stamp}")
-            else:
-                _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/records/record_{record_id}")
+            # if col_sc_name.endswith("logs.sh") and record_id != 1:
+            #     _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/records/record_{record_id} '{record_stamp}'")
+            # else:
+            _, stderr = self.ssh_server.execute_command(f"bash {scripts_rpath}/{col_sc_name} {self.parent_name}/records/record_{record_id}")
             if stderr:
                 raise CollectorError(f"Unable to execute script {col_sc_name}: {stderr}")
 

@@ -74,7 +74,7 @@ class LogLevelGauge(tk.Frame):
 
 class LogDashboard(tk.Frame):
     LEVELS = (
-        ("INFO", "#7ac2a2"),
+        ("INFO", "#3dd840"),
         ("WARNING", "#e2c53c"),
         ("ERROR", "#e23535"),
         ("CRITICAL", "#ff2d55"),

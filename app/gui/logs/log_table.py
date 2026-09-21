@@ -11,10 +11,10 @@ class LogTable(tk.Frame):
     )
 
     LEVEL_COLORS = {
-        "INFO": "#7ac2a2",
+        "INFO": "#ffffff",
         "WARNING": "#e2c53c",
         "ERROR": "#e23535",
-        "CRITICAL": "#ff2d55",
+        "CRITICAL": "#b20a0a",
     }
 
     EVEN_ROW_COLOR = "#1f2226"

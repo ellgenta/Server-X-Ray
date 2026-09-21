@@ -10,6 +10,7 @@ class AppController:
 
     def __init__(self):
         self.is_connected = False
+        self.host = None
         self.service = SnapshotService()
         self.ram_stats_history = []
         self.swap_stats = None
@@ -26,6 +27,7 @@ class AppController:
 
         try:
             self.service.start_service(credentials)
+            self.host = self.service.collector.ssh_server.credentials.host
         except Exception as er:
             raise ControllerError(str(er))
         self.is_connected = True
@@ -57,9 +59,9 @@ class AppController:
         self.load_average_stats = snapshot.load_average_stats
         self.disk_stats = snapshot.disk_stats
         self.proc_list = snapshot.proc_list
-        self.auth_logs = self._update_logs(self.auth_logs, snapshot.auth_logs)
-        self.sys_logs = self._update_logs(self.sys_logs, snapshot.sys_logs)
-        self.kern_logs = self._update_logs(self.kern_logs, snapshot.kern_logs)
+        self.auth_logs = snapshot.auth_logs
+        self.sys_logs = snapshot.sys_logs
+        self.kern_logs = snapshot.kern_logs
 
     def reset(self):
         self.ram_stats_history = []

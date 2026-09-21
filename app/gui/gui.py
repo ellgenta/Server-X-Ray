@@ -51,7 +51,7 @@ class App:
         page = PerformancePage(
             self.root,
             self.controller,
-            "meow",
+            self.controller.host,
             self.on_tab_change,
             self.show_login_page
         )
@@ -64,7 +64,7 @@ class App:
         page = LogPage(
             self.root,
             self.controller,
-            "meow",
+            self.controller.host,
             title,
             log_attr,
             self.on_tab_change,
