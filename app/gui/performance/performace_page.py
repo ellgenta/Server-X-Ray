@@ -8,11 +8,12 @@ from .ram_stats import RamStats
 from .ram_swap_table import RamSwapTable
 
 class PerformancePage(tk.Frame):
-    def __init__(self, parent, controller, host, on_disconnect):
+    def __init__(self, parent, controller, host, on_tab_change, on_disconnect):
         super().__init__(parent, bg="#202020")
 
         self.controller = controller
         self.host = host
+        self.on_tab_change = on_tab_change
         self.on_disconnect = on_disconnect
 
         self.create_widgets()
@@ -26,7 +27,7 @@ class PerformancePage(tk.Frame):
         self.top_bar = TopBar(
             self,
             self.host,
-            None,
+            self.on_tab_change,
             self.disconnect
         )
 
@@ -307,6 +308,13 @@ class PerformancePage(tk.Frame):
             self.controller.ram_stats_history,
             self.controller.swap_stats
         )
+
+    def refresh(self):
+        self.refresh_processes()
+        self.refresh_cpu_stats()
+        self.refresh_disks()
+        self.refresh_ram()
+        self.refresh_ram_swap()
 
     def disconnect(self):
         self.controller.disconnect()

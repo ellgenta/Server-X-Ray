@@ -3,9 +3,16 @@ import ctypes
 import threading
 from .login.login_page import LoginPage
 from .performance.performace_page import PerformancePage
+from .logs.log_page import LogPage
 
 
 class App:
+    LOG_TABS = {
+        "log1": ("auth_logs", "Authlogs"),
+        "log2": ("sys_logs", "Syslogs"),
+        "log3": ("kern_logs", "Kernlogs"),
+    }
+
     def __init__(self, controller):
         ctypes.windll.shcore.SetProcessDpiAwareness(1)
 
@@ -16,6 +23,7 @@ class App:
         self.root.geometry("1000x700")
 
         self.update_in_progress = False
+        self.current_page = None
 
         self.show_login_page()
         self.run()
@@ -24,6 +32,8 @@ class App:
         self.root.mainloop()
 
     def show_login_page(self):
+        self.current_page = None
+
         self.login_page = LoginPage(
             self.root,
             self.controller,
@@ -35,21 +45,52 @@ class App:
         self.update_data()
 
     def show_performance_page(self):
-        self.login_page.destroy()
+        if hasattr(self, "login_page") and self.login_page.winfo_exists():
+            self.login_page.destroy()
 
-        self.performance_page = PerformancePage(
+        page = PerformancePage(
             self.root,
             self.controller,
             "meow",
+            self.on_tab_change,
             self.show_login_page
         )
 
-        self.performance_page.pack(
+        self._switch_page(page)
+
+    def show_log_page(self, tab_name):
+        log_attr, title = self.LOG_TABS[tab_name]
+
+        page = LogPage(
+            self.root,
+            self.controller,
+            "meow",
+            title,
+            log_attr,
+            self.on_tab_change,
+            self.show_login_page
+        )
+
+        self._switch_page(page)
+
+    def _switch_page(self, page):
+        if self.current_page is not None and self.current_page.winfo_exists():
+            self.current_page.destroy()
+
+        self.current_page = page
+
+        self.current_page.pack(
             fill="both",
             expand=True
         )
 
         self._trigger_update()
+
+    def on_tab_change(self, tab_name):
+        if tab_name == "performance":
+            self.show_performance_page()
+        elif tab_name in self.LOG_TABS:
+            self.show_log_page(tab_name)
 
     def update_data(self):
         self._trigger_update()
@@ -76,9 +117,5 @@ class App:
     def _apply_update(self):
         self.update_in_progress = False
 
-        if hasattr(self, "performance_page"):
-            self.performance_page.refresh_processes()
-            self.performance_page.refresh_cpu_stats()
-            self.performance_page.refresh_disks()
-            self.performance_page.refresh_ram()
-            self.performance_page.refresh_ram_swap()
+        if self.current_page is not None and self.current_page.winfo_exists():
+            self.current_page.refresh()
