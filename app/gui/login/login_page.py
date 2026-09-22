@@ -105,7 +105,8 @@ class LoginPage(tk.Frame):
         try:
             self.controller.connect(credentials)
         except ControllerError as er:
-            self.after(0, lambda: self._on_connect_error(host, er))
+            error_message = str(er)
+            self.after(0, lambda: self._on_connect_error(host, error_message))
             return
 
         self.after(0, self._on_connect_success)
@@ -113,10 +114,10 @@ class LoginPage(tk.Frame):
     def _on_connect_success(self):
         self.on_login_success()
 
-    def _on_connect_error(self, host, er):
+    def _on_connect_error(self, host, error_message):
         self.connect_button.configure(state="normal", text="Connect")
 
         messagebox.showerror(
             title=f"Connection to {host} failed",
-            message=str(er)
+            message=error_message
         )
